@@ -52,7 +52,7 @@
 			<Add directory="/home/chrak/Daten/Software/repositories/xmegaClocks" />
 			<Add directory="/home/chrak/Daten/Software/repositories/LuefterSteuerung" />
 			<Add directory="/home/chrak/Daten/Software/repositories/twiMaster" />
-			<Add directory="/home/chrak/Daten/Software/repositories/MAX7328" />
+			<Add directory="/home/chrak/Daten/Software/repositories/max7328" />
 			<Add directory="/home/chrak/Daten/Software/repositories/maxim1W" />
 			<Add directory="/home/chrak/Daten/Software/repositories/sht2x" />
 			<Add directory="/home/chrak/Daten/Software/repositories/timer" />
@@ -79,8 +79,6 @@
 		<Unit filename="../ComReceiver/Operators.h" />
 		<Unit filename="../ComReceiver/cmultiStandardCommands.cpp" />
 		<Unit filename="../ComReceiver/cmultiStandardCommands.h" />
-		<Unit filename="../MAX7328/max7328.cpp" />
-		<Unit filename="../MAX7328/max7328.h" />
 		<Unit filename="../Secrets/secrets.h" />
 		<Unit filename="../communication/CRC_Calc.cpp" />
 		<Unit filename="../communication/CRC_Calc.h" />
@@ -89,6 +87,8 @@
 		<Unit filename="../communication/Serial.cpp" />
 		<Unit filename="../communication/Serial.h" />
 		<Unit filename="../communication/UART.h" />
+		<Unit filename="../max7328/max7328.cpp" />
+		<Unit filename="../max7328/max7328.h" />
 		<Unit filename="../maxim1W/Masters/DS248x/DS2484/DS2484.cpp" />
 		<Unit filename="../maxim1W/Masters/DS248x/DS2484/DS2484.h" />
 		<Unit filename="../maxim1W/Masters/DS248x/DS248x.cpp" />
