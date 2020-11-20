@@ -29,7 +29,7 @@ void setup()
 
 	uint8_t i;
 
-  TWI_MasterInit(&twiC_Master, &TWIC, TWI_MASTER_INTLVL_LO_gc, TWI_BAUDSETTING);
+ // TWI_MasterInit(&twiC_Master, &TWIC, TWI_MASTER_INTLVL_LO_gc, TWI_BAUDSETTING);
   TWI_MasterInit(&twiE_Master, &TWIE, TWI_MASTER_INTLVL_LO_gc, TWI_BAUDSETTING);
 
 	for(i=0;i<20;i++)
@@ -43,37 +43,30 @@ void setup()
 	sei();
 
 	cnet.open(Serial::BAUD_57600,F_CPU);
+	cnet.sendInfo("Hello Again","BR");
+
+
 }
 
 int main(void)
 {
 uint8_t reportStarted = false;
+bool test;
 	setup();
 
 	init_mytimer();
- 	setup_twi();
+// 	setup_twi();
 
 	uint8_t sensorReady=SENSOR_READY;
+	/*
 	MAX7328 maxTest(&twiE_Master,I2C_EXTENDER_ADDRESS);
   maxTest.newValue(0b11111111);
+*/
+  humiSensor.begin(&twiE_Master);
+  humiSensor.setMode(SHTC3_NORMAL_T_FIRST);
+  _delay_ms(10);
+  cnet.broadcastUInt16(humiSensor.getID(),'a','b','c');
 
-  humiSensor.begin(&twiC_Master);
-
-	while(1)
-  {
-    RGBLED_ROT_ON;
-    _delay_ms(1000);
-    RGBLED_ROT_OFF;
-    _delay_ms(1000);
-    RGBLED_GRUEN_ON
-    _delay_ms(1000);
-    RGBLED_GRUEN_OFF
-    _delay_ms(1000);
-    RGBLED_BLAU_ON
-    _delay_ms(1000);
-    RGBLED_BLAU_OFF;
-    _delay_ms(1000);
-  }
 	while (1)
 	{
 		cnetRec.comStateMachine();
@@ -113,35 +106,35 @@ uint8_t reportStarted = false;
             switch(statusReport)
             {
                 case TEMPREPORT:
-                    sprintf(buffer,"%f",(double)fTemperatur);
+                    sprintf(buffer,"%.1f",(double)fTemperatur);
                     cnet.sendStandard(buffer,BROADCAST,'C','1','t','F');
                 break;
                 case HUMIREPORT:
-                    sprintf(buffer,"%f",(double)fHumidity);
+                    sprintf(buffer,"%.1f",(double)fHumidity);
                     cnet.sendStandard(buffer,BROADCAST,'C','1','h','F');
                 break;
                 case ABSHUMIREPORT:
-                    sprintf(buffer,"%f",(double)fAbsHumitdity);
+                    sprintf(buffer,"%.1f",(double)fAbsHumitdity);
                     cnet.sendStandard(buffer,BROADCAST,'C','1','a','F');
                 break;
                 case DEWPOINTREPORT:
-                    sprintf(buffer,"%f",(double)fDewPoint);
+                    sprintf(buffer,"%.1f",(double)fDewPoint);
                     cnet.sendStandard(buffer,BROADCAST,'C','1','d','F');
                 break;
                 case L1SWELLREPORT:
-                    sprintf(buffer,"%ud",(uint8_t)u8F1Swell);
+                    sprintf(buffer,"%u",(uint8_t)u8F1Swell);
                     cnet.sendStandard(buffer,BROADCAST,'L','1','L','F');
                 break;
                 case L2SWELLREPORT:
-                    sprintf(buffer,"%ud",(uint8_t)u8F2Swell);
+                    sprintf(buffer,"%u",(uint8_t)u8F2Swell);
                     cnet.sendStandard(buffer,BROADCAST,'L','1','G','F');
                 break;
                 case L1HYSTREPORT:
-                    sprintf(buffer,"%ud",(uint8_t)u8F1Hysterese);
+                    sprintf(buffer,"%u",(uint8_t)u8F1Hysterese);
                     cnet.sendStandard(buffer,BROADCAST,'L','1','H','F');
                 break;
                 case L2HYSTREPORT:
-                    sprintf(buffer,"%ud",(uint8_t)u8F2Hysterese);
+                    sprintf(buffer,"%u",(uint8_t)u8F2Hysterese);
                     cnet.sendStandard(buffer,BROADCAST,'L','1','I','F');
                 break;
                 case LASTREPORT:
@@ -171,72 +164,58 @@ uint8_t doLastSensor()
 
 uint8_t doClima()
 {
-static unsigned char crcSH11;
 bool noError;
-static unsigned int iTemperature,iHumidity;
+
 	switch(statusKlima)
 	{
 		case NOTHING_CLIMA_TODO:
-			statusKlima = START_TCONVERSION;
+			statusKlima = WAKEUP;
 		break;
-		case START_TCONVERSION: // Durchlaufzeit ca. 55 탎
+		case WAKEUP:
+		  humiSensor.wakeup();
+		  statusKlima = WAIT_WAKEUP;
+      MyTimers[TIMER_TEMPERATURE].value = 2; //22
+      MyTimers[TIMER_TEMPERATURE].state = TM_START;
+    break;
+
+		case START_CONVERSION: //
 			LED_ROT_ON;
-			crcSH11 = 0;
-			noError=humiSensor.startMeasure(); // startConversion(0,&crcSH11);
+
+			noError=humiSensor.startMeasure();
 			if (noError==true)
 			{
-				statusKlima = WAIT_TCONVERSION;
-				MyTimers[TIMER_TEMPERATURE].value = 44; //22
+				statusKlima = WAIT_CONVERSION;
+				MyTimers[TIMER_TEMPERATURE].value = 2; //22
 				MyTimers[TIMER_TEMPERATURE].state = TM_START;
 			}
 			else
 				statusKlima = NOTHING_CLIMA_TODO;
 		break;
-		/*
-		case READ_TCONVERSION:  // Durchlaufzeit ca. 82 탎
-			noError = readConversion(&iTemperature,&crcSH11);
+
+		case READ_CONVERSION:  // Durchlaufzeit ca.
+			noError = humiSensor.readResults();
 			if (noError==true)
 			{
-				statusKlima = START_HCONVERSION;
-			}
-			else
-				statusKlima = NOTHING_CLIMA_TODO;
-		break;
-		case START_HCONVERSION:
-			noError=startConversion(1,&crcSH11);
-			if (noError==0)
-			{
-				statusKlima = WAIT_HCONVERSION;
-				MyTimers[TIMER_TEMPERATURE].value = 14; // 7
+				statusKlima = WAIT_READ;
+				MyTimers[TIMER_TEMPERATURE].value = 2; //22
 				MyTimers[TIMER_TEMPERATURE].state = TM_START;
 			}
 			else
 				statusKlima = NOTHING_CLIMA_TODO;
 		break;
-		case READ_HCONVERSION:
-			noError = readConversion(&iHumidity,&crcSH11);
-			if (noError==0)
-			{
-				statusKlima = CALC_CONVERSION1;
-			}
-			else
-				statusKlima = NOTHING_CLIMA_TODO;
+		case CALC_CONVERSION0:  // Durchlaufzeit ca.
+		  humiSensor.getResults(fTemperatur,fHumidity);
+		  humiSensor.sleep();
+			statusKlima = CALC_CONVERSION1;
 		break;
-		case CALC_CONVERSION1:  // Durchlaufzeit ca. 58 탎
-			fHumidity = (float)iHumidity;
-			fTemperatur = (float)iTemperature;
-			calc_sth11(&fHumidity ,&fTemperatur);
+		case CALC_CONVERSION1:  // Durchlaufzeit ca.
+		  fAbsHumitdity =  humiSensor.calcAbsHumi(fTemperatur,fHumidity);
 			statusKlima = CALC_CONVERSION2;
 		break;
-		case CALC_CONVERSION2:  // Durchlaufzeit ca. 141
-			fDewPoint = calc_dewpoint_float(fHumidity,fTemperatur); // calculate dew point temperature
-			statusKlima = CALC_CONVERSION3;
-		break;
-		case CALC_CONVERSION3:  // Durchlaufzeit ca. 230 탎
-			fAbsHumitdity = abs_feuchte(fHumidity,fTemperatur); // calculate dew point temperature
+		case CALC_CONVERSION2:  // Durchlaufzeit ca.
+		  fDewPoint =  humiSensor.calcDewPoint(fTemperatur,fHumidity);
 			statusKlima = NOTHING_CLIMA_TODO;
-      LED_ROT_OFF;
-		break;*/
+		break;
 	}
 	return(statusKlima);
 }
