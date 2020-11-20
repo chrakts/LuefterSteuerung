@@ -23,10 +23,13 @@ COMMAND cnetCommands[NUM_COMMANDS] =
 		{'C','h',CUSTOMER,NOPARAMETER,0,jobGetCHumiditySensor},
 		{'C','d',CUSTOMER,NOPARAMETER,0,jobGetCDewPointSensor},
 		{'C','a',CUSTOMER,NOPARAMETER,0,jobGetCAbsHumiditySensor},
+		{'L','a',CUSTOMER,NOPARAMETER,0,jobGetLuefterActualStatus},
+		{'L','s',CUSTOMER,NOPARAMETER,0,jobGetLuefterSetStatus},
 		{'L','L',CUSTOMER,UINT_8,1,jobSetLuefter1OnValue},
 		{'L','G',CUSTOMER,UINT_8,1,jobSetLuefter2OnValue},
 		{'L','H',CUSTOMER,UINT_8,1,jobSetLuefter1HystValue},
 		{'L','I',CUSTOMER,UINT_8,1,jobSetLuefter2HystValue},
+		{'L','S',CUSTOMER,UINT_8,1,jobSetLuefterSetStatus},
 		{'L','l',CUSTOMER,NOPARAMETER,0,jobGetLuefter1OnValue},
 		{'L','g',CUSTOMER,NOPARAMETER,0,jobGetLuefter2OnValue},
 		{'L','h',CUSTOMER,NOPARAMETER,0,jobGetLuefter1HystValue},
@@ -58,6 +61,16 @@ void jobGetLuefter2HystValue(ComReceiver *comRec, char function,char address,cha
 	comRec->sendAnswerInt(function,address,job,u8F2Hysterese,true);
 }
 
+void jobGetLuefterSetStatus(ComReceiver *comRec, char function,char address,char job, void * pMem)
+{
+	comRec->sendAnswerInt(function,address,job,u8FanSetStatus,true);
+}
+
+void jobGetLuefterActualStatus(ComReceiver *comRec, char function,char address,char job, void * pMem)
+{
+	comRec->sendAnswerInt(function,address,job,u8FanActualStatus,true);
+}
+
 void jobSetLuefter1OnValue(ComReceiver *comRec, char function,char address,char job, void * pMem)
 {
 	u8F1Swell = ( (uint8_t*) pMem )[0];
@@ -80,6 +93,12 @@ void jobSetLuefter2HystValue(ComReceiver *comRec, char function,char address,cha
 {
 	u8F2Hysterese = ( (uint8_t*) pMem )[0];
 	comRec->Getoutput()->broadcastUInt8(u8F2Hysterese,function,address,job);
+}
+
+void jobSetLuefterSetStatus(ComReceiver *comRec, char function,char address,char job, void * pMem)
+{
+	u8FanSetStatus = ( (uint8_t*) pMem )[0];
+	comRec->Getoutput()->broadcastUInt8(u8FanSetStatus,function,address,job);
 }
 
 void jobSetIDNumber(ComReceiver *comRec, char function,char address,char job, void * pMem)

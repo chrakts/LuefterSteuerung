@@ -12,17 +12,22 @@
 #include "LuefterSteuerung.h"
 extern COMMAND cnetCommands[];
 
-#define NUM_COMMANDS 21+CMULTI_STANDARD_NUM
+#define NUM_COMMANDS 24+CMULTI_STANDARD_NUM
 
 void jobSetLuefter1OnValue(ComReceiver *comRec, char function,char address,char job, void * pMem);
 void jobSetLuefter2OnValue(ComReceiver *comRec, char function,char address,char job, void * pMem);
 void jobSetLuefter1HystValue(ComReceiver *comRec, char function,char address,char job, void * pMem);
 void jobSetLuefter2HystValue(ComReceiver *comRec, char function,char address,char job, void * pMem);
+void jobSetLuefterSetStatus(ComReceiver *comRec, char function,char address,char job, void * pMem);
 
 void jobGetLuefter1OnValue(ComReceiver *comRec, char function,char address,char job, void * pMem);
 void jobGetLuefter2OnValue(ComReceiver *comRec, char function,char address,char job, void * pMem);
 void jobGetLuefter1HystValue(ComReceiver *comRec, char function,char address,char job, void * pMem);
 void jobGetLuefter2HystValue(ComReceiver *comRec, char function,char address,char job, void * pMem);
+void jobGetLuefterSetStatus(ComReceiver *comRec, char function,char address,char job, void * pMem);
+void jobGetLuefterActualStatus(ComReceiver *comRec, char function,char address,char job, void * pMem);
+void jobGetLuefterSetStatus(ComReceiver *comRec, char function,char address,char job, void * pMem);
+void jobGetLuefterActualStatus(ComReceiver *comRec, char function,char address,char job, void * pMem);
 
 void jobGetCTemperatureSensor(ComReceiver *comRec, char function,char address,char job, void * pMem);
 void jobGetCHumiditySensor(ComReceiver *comRec, char function,char address,char job, void * pMem);
