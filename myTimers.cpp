@@ -8,8 +8,8 @@
 //10:  99.0 ms
 //101: 1000 ms
 
-volatile TIMER MyTimers[MYTIMER_NUM]= {	{TM_START,RESTART_YES,100,0,nextTemperatureStatus},
-                                        {TM_STOP,RESTART_YES,actReportBetweenSensors,0,nextReportStatus},
+volatile TIMER MyTimers[MYTIMER_NUM]= {	{TM_START,RESTART_YES,400,0,nextTemperatureStatus},
+                                        {TM_START,RESTART_YES,actReportBetweenSensors,0,nextReportStatus},
 										{TM_STOP,RESTART_NO,100,0,NULL}		// Timeout-Timer
 };
 
@@ -34,14 +34,14 @@ void nextTemperatureStatus(uint8_t test)
 		case KLIMASENSOR:
 			switch(statusKlima)
 			{
-/*				case NOTHING_CLIMA_TODO:
-					statusKlima = START_TCONVERSION;
-				break;*/
-				case WAIT_TCONVERSION:
-					statusKlima = READ_TCONVERSION;
+				case WAIT_WAKEUP:
+					statusKlima = START_CONVERSION;
 				break;
-				case WAIT_HCONVERSION:
-					statusKlima = READ_HCONVERSION;
+				case WAIT_CONVERSION:
+					statusKlima = READ_CONVERSION;
+				break;
+				case WAIT_READ:
+					statusKlima = CALC_CONVERSION0;
 				break;
 			}
 		break;
