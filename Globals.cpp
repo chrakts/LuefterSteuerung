@@ -14,6 +14,7 @@
 
 #define CQ "CQ"
 #define C1 "C1"
+#define Bd "Bd"
 
 
 using namespace OneWire;
@@ -31,8 +32,10 @@ uint16_t actReportBetweenSensors = REPORT_BETWEEN_SENSORS;
 uint16_t actWaitAfterLastSensor  = WAIT_AFTER_LAST_SENSOR;
 
 
-volatile float fTemperatur=-999,fHumidity=-999,fDewPoint=-999,fAbsHumitdity=-999;
+volatile double fTemperatur=-999,fHumidity=-999,fDewPoint=-999,fAbsHumitdity=-999;
 volatile uint8_t u8F1Swell=75,u8F1Hysterese=5,u8F2Swell=85,u8F2Hysterese=5;
+volatile uint8_t u8FanSetStatus=0,u8FanActualStatus=0;
+
 
 volatile uint8_t statusSensoren = KLIMASENSOR;
 volatile uint8_t statusReport = TEMPREPORT;
