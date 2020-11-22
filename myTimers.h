@@ -13,18 +13,15 @@
 #include "External.h"
 #include "myconstants.h"
 
-#define MYTIMER_NUM	5
+#define MYTIMER_NUM	3
 
 
-enum{TIMER_TEMPERATURE,TIMER_REPORT,TIMER_LEDBLINK1,TIMER_LEDBLINK2};
+enum{TIMER_TEMPERATURE,TIMER_REPORT,TIMER_SAVE_DELAY};
 
-
-void led1Blinken(uint8_t test);
-void led2Blinken(uint8_t test);
 
 void nextTemperatureStatus(uint8_t test);
 void nextReportStatus(uint8_t test);
-
+void nowSaveEEProm(uint8_t test);
 
 extern volatile TIMER MyTimers[MYTIMER_NUM];
 
