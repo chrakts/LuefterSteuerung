@@ -50,6 +50,8 @@ uint8_t reportStarted = false;
 bool test;
 	setup();
 
+	cnet.broadcastUInt8((uint8_t) RST.STATUS,'S','0','R');
+
   readEEData();
 
 	init_mytimer();
