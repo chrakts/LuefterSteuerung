@@ -48,13 +48,18 @@ extern char IDNumber[12] EEMEM ;
 extern char SerialNumber[12] EEMEM;
 extern char IndexNumber[2] EEMEM;
 
+extern const char *luefterStatusStrings[];
+
 extern uint16_t actReportBetweenBlocks;
 extern uint16_t actReportBetweenSensors;
 extern uint16_t actWaitAfterLastSensor;
 
 volatile extern double fTemperatur,fHumidity,fDewPoint,fAbsHumitdity;
 volatile extern uint8_t u8F1Swell,u8F1Hysterese,u8F2Swell,u8F2Hysterese;
-volatile extern uint8_t u8FanSetStatus,u8FanActualStatus;
+volatile extern uint8_t u8FanSetStatus,u8FanActualStatus,u8FanActualStatusOld;
+
+extern uint8_t EEMEM ee_u8F1Swell,ee_u8F1Hysterese,ee_u8F2Swell,ee_u8F2Hysterese;
+extern uint8_t EEMEM ee_u8FanSetStatus;
 
 extern const char *fehler_text[];
 extern uint8_t actNumberSensors;
