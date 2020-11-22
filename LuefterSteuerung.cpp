@@ -7,10 +7,6 @@
 
 #include "LuefterSteuerung.h"
 
-uint8_t doLastSensor();
-uint8_t doClima();
-void setup_twi();
-
 void setup()
 {
   init_clock(SYSCLK,PLL,true,CLOCK_CALIBRATION);
@@ -37,7 +33,7 @@ void setup()
 		LED_GRUEN_TOGGLE;
 		_delay_ms(50);
 	}
-
+  LEDGRUEN_OFF;
 
 	PMIC_CTRL = PMIC_LOLVLEX_bm | PMIC_HILVLEN_bm | PMIC_MEDLVLEN_bm;
 	sei();
@@ -53,6 +49,8 @@ int main(void)
 uint8_t reportStarted = false;
 bool test;
 	setup();
+
+  readEEData();
 
 	init_mytimer();
 // 	setup_twi();
@@ -71,16 +69,43 @@ bool test;
 	{
 		cnetRec.comStateMachine();
 		cnetRec.doJob();
+		if(u8FanSetStatus!=FAN_STATUS_AUTO)
+      u8FanActualStatus = u8FanSetStatus;
+    else // FAN = Auto
+    {
+      uint8_t u8Humi = (uint8_t)fHumidity;
+      switch(u8FanActualStatus)
+      {
+        case FAN_STATUS_OFF:
+          if( u8Humi > u8F1Swell)
+            u8FanActualStatus = FAN_STATUS_1;
+        break;
+        case FAN_STATUS_1:
+          if( u8Humi < u8F1Swell-u8F1Hysterese)
+            u8FanActualStatus = FAN_STATUS_OFF;
+          else if( u8Humi > u8F2Swell )
+            u8FanActualStatus = FAN_STATUS_2;
+        break;
+        case FAN_STATUS_2:
+          if( u8Humi < u8F2Swell-u8F2Hysterese)
+            u8FanActualStatus = FAN_STATUS_1;
+        break;
+      }
+    }
+    if( u8FanActualStatusOld != u8FanActualStatus)
+    {
+      reportFanActualStatus(&cnet);
+      u8FanActualStatusOld=u8FanActualStatus;
+    }
+
 		switch(statusSensoren)
 		{
 			case KLIMASENSOR:
 				LED_ROT_ON;
-				LED_GRUEN_OFF;
 				sensorReady = doClima();
 			break;
 			case LASTSENSOR:
 				LED_ROT_OFF;
-				LED_GRUEN_ON;
 				sensorReady = doLastSensor();
 			break;
 		}
@@ -98,51 +123,60 @@ bool test;
 			}
 		}
 		if( sendStatusReport )
+    {
+        char buffer[16];
+        sendStatusReport = false;
+        MyTimers[TIMER_REPORT].value = actReportBetweenSensors;
+        MyTimers[TIMER_REPORT].state = TM_START;
+        switch(statusReport)
         {
-            char buffer[16];
-            sendStatusReport = false;
-            MyTimers[TIMER_REPORT].value = actReportBetweenSensors;
-            MyTimers[TIMER_REPORT].state = TM_START;
-            switch(statusReport)
-            {
-                case TEMPREPORT:
-                    sprintf(buffer,"%.1f",(double)fTemperatur);
-                    cnet.sendStandard(buffer,BROADCAST,'C','1','t','F');
-                break;
-                case HUMIREPORT:
-                    sprintf(buffer,"%.1f",(double)fHumidity);
-                    cnet.sendStandard(buffer,BROADCAST,'C','1','h','F');
-                break;
-                case ABSHUMIREPORT:
-                    sprintf(buffer,"%.1f",(double)fAbsHumitdity);
-                    cnet.sendStandard(buffer,BROADCAST,'C','1','a','F');
-                break;
-                case DEWPOINTREPORT:
-                    sprintf(buffer,"%.1f",(double)fDewPoint);
-                    cnet.sendStandard(buffer,BROADCAST,'C','1','d','F');
-                break;
-                case L1SWELLREPORT:
-                    sprintf(buffer,"%u",(uint8_t)u8F1Swell);
-                    cnet.sendStandard(buffer,BROADCAST,'L','1','L','F');
-                break;
-                case L2SWELLREPORT:
-                    sprintf(buffer,"%u",(uint8_t)u8F2Swell);
-                    cnet.sendStandard(buffer,BROADCAST,'L','1','G','F');
-                break;
-                case L1HYSTREPORT:
-                    sprintf(buffer,"%u",(uint8_t)u8F1Hysterese);
-                    cnet.sendStandard(buffer,BROADCAST,'L','1','H','F');
-                break;
-                case L2HYSTREPORT:
-                    sprintf(buffer,"%u",(uint8_t)u8F2Hysterese);
-                    cnet.sendStandard(buffer,BROADCAST,'L','1','I','F');
-                break;
-                case LASTREPORT:
-                    MyTimers[TIMER_REPORT].value = actReportBetweenBlocks;
-                    MyTimers[TIMER_REPORT].state = TM_START;
-                break;
-            }
+            case TEMPREPORT:
+                sprintf(buffer,"%.1f",(double)fTemperatur);
+                cnet.sendStandard(buffer,BROADCAST,'C','1','t','F');
+            break;
+            case HUMIREPORT:
+                sprintf(buffer,"%.1f",(double)fHumidity);
+                cnet.sendStandard(buffer,BROADCAST,'C','1','h','F');
+            break;
+            case ABSHUMIREPORT:
+                sprintf(buffer,"%.1f",(double)fAbsHumitdity);
+                cnet.sendStandard(buffer,BROADCAST,'C','1','a','F');
+            break;
+            case DEWPOINTREPORT:
+                sprintf(buffer,"%.1f",(double)fDewPoint);
+                cnet.sendStandard(buffer,BROADCAST,'C','1','d','F');
+            break;
+            case L1SWELLREPORT:
+                sprintf(buffer,"%u",(uint8_t)u8F1Swell);
+                cnet.sendStandard(buffer,BROADCAST,'L','1','L','F');
+            break;
+            case L2SWELLREPORT:
+                sprintf(buffer,"%u",(uint8_t)u8F2Swell);
+                cnet.sendStandard(buffer,BROADCAST,'L','1','G','F');
+            break;
+            case L1HYSTREPORT:
+                sprintf(buffer,"%u",(uint8_t)u8F1Hysterese);
+                cnet.sendStandard(buffer,BROADCAST,'L','1','H','F');
+            break;
+            case L2HYSTREPORT:
+                sprintf(buffer,"%u",(uint8_t)u8F2Hysterese);
+                cnet.sendStandard(buffer,BROADCAST,'L','1','I','F');
+            break;
+            case FANACTUALSTATUSREPORT:
+                reportFanActualStatus(&cnet);
+            break;
+            case FANSETSTATUSREPORT:
+                reportFanSetStatus(&cnet);
+                //cnet.sendStandard(luefterStatusStrings[u8FanSetStatus],BROADCAST,'L','1','s','F');
+            break;
+            case LASTREPORT:
+                MyTimers[TIMER_REPORT].value = actReportBetweenBlocks;
+                MyTimers[TIMER_REPORT].state = TM_START;
+            break;
         }
+    }
+    else
+      ;
 	}
 }
 
@@ -288,4 +322,14 @@ void buffer_rom_id(char *buffer,OneWire::RomId & romId)
 		strcat(buffer,temp);
 	}
 }
+
+void readEEData()
+{
+  u8F1Swell = eeprom_read_byte(&ee_u8F1Swell);
+  u8F1Hysterese = eeprom_read_byte(&ee_u8F1Hysterese);
+  u8F2Swell = eeprom_read_byte(&ee_u8F2Swell);
+  u8F2Hysterese= eeprom_read_byte(&ee_u8F2Hysterese);
+  u8FanSetStatus= eeprom_read_byte(&ee_u8FanSetStatus);
+}
+
 

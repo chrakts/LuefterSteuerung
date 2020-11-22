@@ -29,7 +29,7 @@ COMMAND cnetCommands[NUM_COMMANDS] =
 		{'L','G',CUSTOMER,UINT_8,1,jobSetLuefter2OnValue},
 		{'L','H',CUSTOMER,UINT_8,1,jobSetLuefter1HystValue},
 		{'L','I',CUSTOMER,UINT_8,1,jobSetLuefter2HystValue},
-		{'L','S',CUSTOMER,UINT_8,1,jobSetLuefterSetStatus},
+		{'L','S',CUSTOMER,STRING,8,jobSetLuefterSetStatus},
 		{'L','l',CUSTOMER,NOPARAMETER,0,jobGetLuefter1OnValue},
 		{'L','g',CUSTOMER,NOPARAMETER,0,jobGetLuefter2OnValue},
 		{'L','h',CUSTOMER,NOPARAMETER,0,jobGetLuefter1HystValue},
@@ -63,42 +63,67 @@ void jobGetLuefter2HystValue(ComReceiver *comRec, char function,char address,cha
 
 void jobGetLuefterSetStatus(ComReceiver *comRec, char function,char address,char job, void * pMem)
 {
-	comRec->sendAnswerInt(function,address,job,u8FanSetStatus,true);
+  cnet.sendStandard(luefterStatusStrings[u8FanSetStatus],BROADCAST,'L','1','s',true);
 }
 
 void jobGetLuefterActualStatus(ComReceiver *comRec, char function,char address,char job, void * pMem)
 {
-	comRec->sendAnswerInt(function,address,job,u8FanActualStatus,true);
+  comRec->sendAnswer(luefterStatusStrings[u8FanActualStatus],'L','1','a',true);
 }
 
 void jobSetLuefter1OnValue(ComReceiver *comRec, char function,char address,char job, void * pMem)
 {
 	u8F1Swell = ( (uint8_t*) pMem )[0];
+	MyTimers[TIMER_SAVE_DELAY].state = TM_START;
+	LED_GRUEN_ON;
 	comRec->Getoutput()->broadcastUInt8(u8F1Swell,function,address,job);
 }
 
 void jobSetLuefter2OnValue(ComReceiver *comRec, char function,char address,char job, void * pMem)
 {
 	u8F2Swell = ( (uint8_t*) pMem )[0];
+	MyTimers[TIMER_SAVE_DELAY].state = TM_START;
+	LED_GRUEN_ON;
 	comRec->Getoutput()->broadcastUInt8(u8F2Swell,function,address,job);
 }
 
 void jobSetLuefter1HystValue(ComReceiver *comRec, char function,char address,char job, void * pMem)
 {
 	u8F1Hysterese = ( (uint8_t*) pMem )[0];
+	MyTimers[TIMER_SAVE_DELAY].state = TM_START;
+	LED_GRUEN_ON;
 	comRec->Getoutput()->broadcastUInt8(u8F1Hysterese,function,address,job);
 }
 
 void jobSetLuefter2HystValue(ComReceiver *comRec, char function,char address,char job, void * pMem)
 {
 	u8F2Hysterese = ( (uint8_t*) pMem )[0];
+	MyTimers[TIMER_SAVE_DELAY].state = TM_START;
+	LED_GRUEN_ON;
 	comRec->Getoutput()->broadcastUInt8(u8F2Hysterese,function,address,job);
 }
 
 void jobSetLuefterSetStatus(ComReceiver *comRec, char function,char address,char job, void * pMem)
 {
-	u8FanSetStatus = ( (uint8_t*) pMem )[0];
-	comRec->Getoutput()->broadcastUInt8(u8FanSetStatus,function,address,job);
+char *temp;
+	temp = (char*) pMem;
+	switch(temp[0])
+	{
+    case 'a':
+      u8FanSetStatus = FAN_STATUS_OFF;
+    break;
+    case 'S':
+      if( temp[6]=='1' )
+        u8FanSetStatus = FAN_STATUS_1;
+      else
+        u8FanSetStatus = FAN_STATUS_2;
+    break;
+    case 'A':
+      u8FanSetStatus = FAN_STATUS_AUTO;
+    break;
+	}
+	reportFanSetStatus(comRec->Getoutput());
+	//comRec->Getoutput()->broadcastUInt8(u8FanSetStatus,function,address,job);
 }
 
 void jobSetIDNumber(ComReceiver *comRec, char function,char address,char job, void * pMem)
@@ -205,3 +230,12 @@ void jobWaitAfterLastSensor(ComReceiver *comRec, char function,char address,char
 	comRec->sendAnswerInt(function,address,job,actWaitAfterLastSensor,true);
 }
 
+void reportFanSetStatus(Communication *com)
+{
+  com->sendStandard(luefterStatusStrings[u8FanSetStatus],BROADCAST,'L','1','s','F');
+}
+
+void reportFanActualStatus(Communication *com)
+{
+  com->sendStandard(luefterStatusStrings[u8FanActualStatus],BROADCAST,'L','1','a','F');
+}

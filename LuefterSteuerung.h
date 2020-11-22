@@ -37,4 +37,10 @@
 
 using namespace OneWire;
 
+uint8_t doLastSensor();
+uint8_t doClima();
+void setup_twi();
+void readEEData();
+
+
 #endif /* LUEFTERSTEUERUNG_H_ */

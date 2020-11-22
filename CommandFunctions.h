@@ -50,4 +50,6 @@ void jobSetIDNumber(ComReceiver *comRec, char function,char address,char job, vo
 void jobSetSerialNumber(ComReceiver *comRec, char function,char address,char job, void * pMem);
 void jobSetIndexNumber(ComReceiver *comRec, char function,char address,char job, void * pMem);
 
+void reportFanSetStatus(Communication *com);
+void reportFanActualStatus(Communication *com);
 #endif /* COMMANDFUNCTIONS_H_ */
