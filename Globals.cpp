@@ -15,6 +15,7 @@
 #define CQ "CQ"
 #define C1 "C1"
 #define Bd "Bd"
+#define LB "LB"
 
 
 using namespace OneWire;
@@ -36,7 +37,7 @@ uint16_t actWaitAfterLastSensor  = WAIT_AFTER_LAST_SENSOR;
 
 volatile double fTemperatur=-999,fHumidity=-999,fDewPoint=-999,fAbsHumitdity=-999;
 volatile uint8_t u8F1Swell=25,u8F1Hysterese=1,u8F2Swell=35,u8F2Hysterese=2;
-volatile uint8_t u8FanSetStatus=0,u8FanActualStatus=0,u8FanActualStatusOld=FAN_STATUS_UNVALID;
+volatile uint8_t u8FanSetStatus=FAN_STATUS_AUTO,u8FanActualStatus=FAN_STATUS_2,u8FanActualStatusOld=FAN_STATUS_UNVALID;
 
 uint8_t EEMEM ee_u8F1Swell=75,ee_u8F1Hysterese=5,ee_u8F2Swell=85,ee_u8F2Hysterese=5;
 uint8_t EEMEM ee_u8FanSetStatus=FAN_STATUS_AUTO;

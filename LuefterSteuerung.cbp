@@ -21,7 +21,7 @@
 					<Add option="-DSYSCLK=CLK32M" />
 					<Add option="-DPLL=0" />
 					<Add option="-DCLOCK_CALIBRATION=0x83" />
-					<Add option="-DNODE_STRING=Bd" />
+					<Add option="-DNODE_STRING=LB" />
 					<Add directory="./" />
 				</Compiler>
 				<Linker>
