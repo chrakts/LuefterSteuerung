@@ -232,10 +232,10 @@ void jobWaitAfterLastSensor(ComReceiver *comRec, char function,char address,char
 
 void reportFanSetStatus(Communication *com)
 {
-  com->sendStandard(luefterStatusStrings[u8FanSetStatus],BROADCAST,'L','1','s','F');
+  com->sendStandard(luefterStatusStrings[u8FanSetStatus],BROADCAST,'L','1','s','T');
 }
 
 void reportFanActualStatus(Communication *com)
 {
-  com->sendStandard(luefterStatusStrings[u8FanActualStatus],BROADCAST,'L','1','a','F');
+  com->sendStandard(luefterStatusStrings[u8FanActualStatus],BROADCAST,'L','1','a','T');
 }
