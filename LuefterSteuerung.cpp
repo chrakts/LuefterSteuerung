@@ -33,7 +33,7 @@ void setup()
 		LED_GRUEN_TOGGLE;
 		_delay_ms(50);
 	}
-  LEDGRUEN_OFF;
+  LED_GRUEN_OFF;
 
 	PMIC_CTRL = PMIC_LOLVLEX_bm | PMIC_HILVLEN_bm | PMIC_MEDLVLEN_bm;
 	sei();
