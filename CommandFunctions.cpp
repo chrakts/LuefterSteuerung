@@ -75,7 +75,6 @@ void jobSetLuefter1OnValue(ComReceiver *comRec, char function,char address,char 
 {
 	u8F1Swell = ( (uint8_t*) pMem )[0];
 	MyTimers[TIMER_SAVE_DELAY].state = TM_START;
-	LED_GRUEN_ON;
 	comRec->Getoutput()->broadcastUInt8(u8F1Swell,function,address,job);
 }
 
@@ -83,7 +82,6 @@ void jobSetLuefter2OnValue(ComReceiver *comRec, char function,char address,char 
 {
 	u8F2Swell = ( (uint8_t*) pMem )[0];
 	MyTimers[TIMER_SAVE_DELAY].state = TM_START;
-	LED_GRUEN_ON;
 	comRec->Getoutput()->broadcastUInt8(u8F2Swell,function,address,job);
 }
 
@@ -91,7 +89,6 @@ void jobSetLuefter1HystValue(ComReceiver *comRec, char function,char address,cha
 {
 	u8F1Hysterese = ( (uint8_t*) pMem )[0];
 	MyTimers[TIMER_SAVE_DELAY].state = TM_START;
-	LED_GRUEN_ON;
 	comRec->Getoutput()->broadcastUInt8(u8F1Hysterese,function,address,job);
 }
 
@@ -99,7 +96,6 @@ void jobSetLuefter2HystValue(ComReceiver *comRec, char function,char address,cha
 {
 	u8F2Hysterese = ( (uint8_t*) pMem )[0];
 	MyTimers[TIMER_SAVE_DELAY].state = TM_START;
-	LED_GRUEN_ON;
 	comRec->Getoutput()->broadcastUInt8(u8F2Hysterese,function,address,job);
 }
 
