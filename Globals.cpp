@@ -39,6 +39,8 @@ volatile double fTemperatur=-999,fHumidity=-999,fDewPoint=-999,fAbsHumitdity=-99
 volatile uint8_t u8F1Swell=25,u8F1Hysterese=1,u8F2Swell=35,u8F2Hysterese=2;
 volatile uint8_t u8FanSetStatus=FAN_STATUS_AUTO,u8FanActualStatus=FAN_STATUS_2,u8FanActualStatusOld=FAN_STATUS_UNVALID;
 
+volatile uint8_t u8oldF1Swell,u8oldF1Hysterese,u8oldF2Swell,u8oldF2Hysterese,u8oldFanSetStatus;
+
 uint8_t EEMEM ee_u8F1Swell=75,ee_u8F1Hysterese=5,ee_u8F2Swell=85,ee_u8F2Hysterese=5;
 uint8_t EEMEM ee_u8FanSetStatus=FAN_STATUS_AUTO;
 

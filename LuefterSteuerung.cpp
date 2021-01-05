@@ -47,7 +47,7 @@ void setup()
 int main(void)
 {
 uint8_t reportStarted = false;
-bool test;
+
 	setup();
 
 	cnet.broadcastUInt8((uint8_t) RST.STATUS,'S','0','R');
@@ -58,10 +58,11 @@ bool test;
 // 	setup_twi();
 
 	uint8_t sensorReady=SENSOR_READY;
-	/*
 	MAX7328 maxTest(&twiE_Master,I2C_EXTENDER_ADDRESS);
-  maxTest.newValue(0b11111111);
-*/
+  maxTest.newValue(0xff);
+  while(!TWI_MasterReady(&twiE_Master))
+    ;
+
   humiSensor.begin(&twiE_Master);
   humiSensor.setMode(SHTC3_NORMAL_T_FIRST);
   _delay_ms(10);
@@ -71,6 +72,7 @@ bool test;
 	{
 		cnetRec.comStateMachine();
 		cnetRec.doJob();
+		// Ermittlung des neuen Lüfterstatus
 		if(u8FanSetStatus!=FAN_STATUS_AUTO)
       u8FanActualStatus = u8FanSetStatus;
     else // FAN = Auto
@@ -94,6 +96,23 @@ bool test;
         break;
       }
     }
+    // Setzen der Relais und der LEDs entsprechend des Lüfterstatus
+    uint8_t outputs = 0xff;
+    switch(u8FanActualStatus)
+    {
+      case FAN_STATUS_OFF:
+        outputs ^= LED_RGB_RED;
+      break;
+      case FAN_STATUS_1:
+        outputs ^= LED_RGB_GREEN | POWER_2;
+      break;
+      case FAN_STATUS_2:
+        outputs ^= LED_RGB_BLUE| POWER_3;
+      break;
+    }
+    maxTest.updateValue(outputs);
+
+    // Falls sich der Lüfterstatus geändert, wird dieser gesendet
     if( u8FanActualStatusOld != u8FanActualStatus)
     {
       reportFanActualStatus(&cnet);
@@ -103,7 +122,6 @@ bool test;
 		switch(statusSensoren)
 		{
 			case KLIMASENSOR:
-				LED_ROT_ON;
 				sensorReady = doClima();
 			break;
 			case LASTSENSOR:
@@ -133,6 +151,7 @@ bool test;
         switch(statusReport)
         {
             case TEMPREPORT:
+                LED_GRUEN_ON;
                 sprintf(buffer,"%.1f",(double)fTemperatur);
                 cnet.sendStandard(buffer,BROADCAST,'C','1','t','F');
             break;
@@ -172,13 +191,27 @@ bool test;
                 //cnet.sendStandard(luefterStatusStrings[u8FanSetStatus],BROADCAST,'L','1','s','F');
             break;
             case LASTREPORT:
+                LED_GRUEN_OFF;
                 MyTimers[TIMER_REPORT].value = actReportBetweenBlocks;
                 MyTimers[TIMER_REPORT].state = TM_START;
             break;
         }
     }
-    else
-      ;
+
+    if( (u8oldF1Swell      != u8F1Swell     ) |
+        (u8oldF1Hysterese  != u8F1Hysterese ) |
+        (u8oldF2Swell      != u8F2Swell     ) |
+        (u8oldF2Hysterese  != u8F2Hysterese ) |
+        (u8oldFanSetStatus != u8FanSetStatus)
+      )
+    {
+      writeEEData();
+      u8oldF1Swell      = u8F1Swell     ;
+      u8oldF1Hysterese  = u8F1Hysterese ;
+      u8oldF2Swell      = u8F2Swell     ;
+      u8oldF2Hysterese  = u8F2Hysterese ;
+      u8oldFanSetStatus = u8FanSetStatus;
+    }
 	}
 }
 
@@ -327,11 +360,25 @@ void buffer_rom_id(char *buffer,OneWire::RomId & romId)
 
 void readEEData()
 {
-  u8F1Swell = eeprom_read_byte(&ee_u8F1Swell);
-  u8F1Hysterese = eeprom_read_byte(&ee_u8F1Hysterese);
-  u8F2Swell = eeprom_read_byte(&ee_u8F2Swell);
-  u8F2Hysterese= eeprom_read_byte(&ee_u8F2Hysterese);
-  u8FanSetStatus= eeprom_read_byte(&ee_u8FanSetStatus);
+  u8F1Swell      = eeprom_read_byte(&ee_u8F1Swell);
+  u8F1Hysterese  = eeprom_read_byte(&ee_u8F1Hysterese);
+  u8F2Swell      = eeprom_read_byte(&ee_u8F2Swell);
+  u8F2Hysterese  = eeprom_read_byte(&ee_u8F2Hysterese);
+  u8FanSetStatus = eeprom_read_byte(&ee_u8FanSetStatus);
+  u8oldF1Swell      = u8F1Swell     ;
+  u8oldF1Hysterese  = u8F1Hysterese ;
+  u8oldF2Swell      = u8F2Swell     ;
+  u8oldF2Hysterese  = u8F2Hysterese ;
+  u8oldFanSetStatus = u8FanSetStatus;
+}
+
+void writeEEData()
+{
+  eeprom_update_byte(&ee_u8F1Swell,u8F1Swell);
+  eeprom_update_byte(&ee_u8F1Hysterese,u8F1Hysterese);
+  eeprom_update_byte(&ee_u8F2Swell,u8F2Swell);
+  eeprom_update_byte(&ee_u8F2Hysterese,u8F2Hysterese);
+  eeprom_update_byte(&ee_u8FanSetStatus,u8FanSetStatus);
 }
 
 

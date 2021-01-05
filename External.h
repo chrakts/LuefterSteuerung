@@ -57,6 +57,7 @@ extern uint16_t actWaitAfterLastSensor;
 volatile extern double fTemperatur,fHumidity,fDewPoint,fAbsHumitdity;
 volatile extern uint8_t u8F1Swell,u8F1Hysterese,u8F2Swell,u8F2Hysterese;
 volatile extern uint8_t u8FanSetStatus,u8FanActualStatus,u8FanActualStatusOld;
+volatile extern uint8_t u8oldF1Swell,u8oldF1Hysterese,u8oldF2Swell,u8oldF2Hysterese,u8oldFanSetStatus;
 
 extern uint8_t EEMEM ee_u8F1Swell,ee_u8F1Hysterese,ee_u8F2Swell,ee_u8F2Hysterese;
 extern uint8_t EEMEM ee_u8FanSetStatus;

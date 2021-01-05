@@ -20,6 +20,13 @@ using namespace OneWire;
 #define LED_GRUEN_OFF		PORTA_OUTSET = PIN3_bm
 #define LED_GRUEN_TOGGLE	PORTA_OUTTGL = PIN3_bm
 
+#define LED_RGB_BLUE  0b10000000
+#define LED_RGB_GREEN 0b01000000
+#define LED_RGB_RED   0b00100000
+#define POWER_3       0b00000100
+#define POWER_2       0b00000010
+#define POWER_1       0b00000001
+
 #define BROADCAST "BR"
 
 typedef struct SensInfos SENSINFOS;
