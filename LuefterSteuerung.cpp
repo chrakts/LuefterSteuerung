@@ -39,9 +39,6 @@ void setup()
 	sei();
 
 	cnet.open(Serial::BAUD_57600,F_CPU);
-	cnet.sendInfo("Hello Again","BR");
-
-
 }
 
 int main(void)
