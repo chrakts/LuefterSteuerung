@@ -9,17 +9,6 @@
 #ifndef MYCONSTANTS_H_
 #define MYCONSTANTS_H_
 
-
-#include "RomId/RomId.h"
-using namespace OneWire;
-
-#define LED_ROT_ON		PORTA_OUTCLR = PIN2_bm
-#define LED_ROT_OFF		PORTA_OUTSET = PIN2_bm
-#define LED_ROT_TOGGLE	PORTA_OUTTGL = PIN2_bm
-#define LED_GRUEN_ON		PORTA_OUTCLR = PIN3_bm
-#define LED_GRUEN_OFF		PORTA_OUTSET = PIN3_bm
-#define LED_GRUEN_TOGGLE	PORTA_OUTTGL = PIN3_bm
-
 #define LED_RGB_BLUE  0b10000000
 #define LED_RGB_GREEN 0b01000000
 #define LED_RGB_RED   0b00100000
@@ -28,8 +17,6 @@ using namespace OneWire;
 #define POWER_1       0b00000001
 
 #define BROADCAST "BR"
-
-typedef struct SensInfos SENSINFOS;
 
 #define SENSOR_READY 0
 
@@ -52,17 +39,5 @@ enum{TEMPREPORT=0,HUMIREPORT,ABSHUMIREPORT,DEWPOINTREPORT,L1SWELLREPORT,L2SWELLR
 #define NUMBER_OF_TEMPSENSORS 2
 #define NUMBER_OF_SENSORS_NAME_LENGTH 12
 #define NUMBER_STORED_SENSORS NUMBER_OF_TEMPSENSORS
-
-struct SensInfos
-{
-	RomId romID;
-	uint8_t number;
-	uint16_t temperature_bits;
-    uint8_t historyMax;
-	char name[NUMBER_OF_SENSORS_NAME_LENGTH];
-	double caliCoefficients[4];
-};
-
-typedef struct SensInfos SENSINFOS;
 
 #endif /* MYCONSTANTS_H_ */
