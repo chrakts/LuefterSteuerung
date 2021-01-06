@@ -10,14 +10,14 @@
 
 volatile TIMER MyTimers[MYTIMER_NUM]= {	{TM_START,RESTART_YES,400,0,nextTemperatureStatus},
                                         {TM_START,RESTART_YES,actReportBetweenSensors,0,nextReportStatus},
-                                        {TM_STOP,RESTART_NO,5000,0,nowSaveEEProm}		// Timeout-Timer
+                                        {TM_STOP,RESTART_NO,5000,0,nowSaveEEProm}
 };
 
 
 
 void led1Blinken(uint8_t test)
 {
-	LED_ROT_TOGGLE;
+	LEDROT_TOGGLE;
 }
 
 void led2Blinken(uint8_t test)
@@ -59,10 +59,11 @@ void nextTemperatureStatus(uint8_t test)
 
 void nowSaveEEProm(uint8_t test)
 {
-  eeprom_write_byte(&ee_u8F1Swell,u8F1Swell);
-  eeprom_write_byte(&ee_u8F1Hysterese,u8F1Hysterese);
-  eeprom_write_byte(&ee_u8F2Swell,u8F2Swell);
-  eeprom_write_byte(&ee_u8F2Hysterese,u8F2Hysterese);
+  eeprom_update_byte(&ee_u8F1Swell,u8F1Swell);
+  eeprom_update_byte(&ee_u8F1Hysterese,u8F1Hysterese);
+  eeprom_update_byte(&ee_u8F2Swell,u8F2Swell);
+  eeprom_update_byte(&ee_u8F2Hysterese,u8F2Hysterese);
+  eeprom_update_byte(&ee_u8FanSetStatus,u8FanSetStatus);
   LEDGRUEN_OFF;
 }
 

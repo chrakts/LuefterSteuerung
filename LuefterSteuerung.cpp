@@ -30,10 +30,10 @@ void setup()
 
 	for(i=0;i<20;i++)
 	{
-		LED_GRUEN_TOGGLE;
+		LEDGRUEN_TOGGLE;
 		_delay_ms(50);
 	}
-  LED_GRUEN_OFF;
+  LEDGRUEN_OFF;
 
 	PMIC_CTRL = PMIC_LOLVLEX_bm | PMIC_HILVLEN_bm | PMIC_MEDLVLEN_bm;
 	sei();
@@ -122,7 +122,7 @@ uint8_t reportStarted = false;
 				sensorReady = doClima();
 			break;
 			case LASTSENSOR:
-				LED_ROT_OFF;
+				LEDROT_OFF;
 				sensorReady = doLastSensor();
 			break;
 		}
@@ -148,7 +148,7 @@ uint8_t reportStarted = false;
         switch(statusReport)
         {
             case TEMPREPORT:
-                LED_GRUEN_ON;
+                LEDGRUEN_ON;
                 sprintf(buffer,"%.1f",(double)fTemperatur);
                 cnet.sendStandard(buffer,BROADCAST,'C','1','t','F');
             break;
@@ -188,7 +188,7 @@ uint8_t reportStarted = false;
                 //cnet.sendStandard(luefterStatusStrings[u8FanSetStatus],BROADCAST,'L','1','s','F');
             break;
             case LASTREPORT:
-                LED_GRUEN_OFF;
+                LEDGRUEN_OFF;
                 MyTimers[TIMER_REPORT].value = actReportBetweenBlocks;
                 MyTimers[TIMER_REPORT].state = TM_START;
             break;
@@ -245,7 +245,7 @@ bool noError;
     break;
 
 		case START_CONVERSION: //
-			LED_ROT_ON;
+			LEDROT_ON;
 
 			noError=humiSensor.startMeasure();
 			if (noError==true)
@@ -286,75 +286,6 @@ bool noError;
 	return(statusKlima);
 }
 
-void setup_twi()
-{
-  char romBuf[40];
-  bool last_dev = false;
-
-	OneWireMaster::CmdResult result = owm.begin(&twiC_Master,0x18);
-	cnet.sendInfo("Master Ready",BROADCAST);
-	if(result != OneWireMaster::Success)
-	{
-        cnet.sendAlarm("Failed 1W Master",BROADCAST);
-		while(1);
-	}
-	result = owm.OWReset();
-	if(result == OneWireMaster::Success)
-	{
-		result = OWFirst(owm, searchState);
-		if(result == OneWireMaster::Success)
-		{
-			uint8_t temp_index = 0;
-			do
-			{
-				cnet.sendInfo("Search sensor: ",BROADCAST);
-				last_dev = searchState.last_device_flag;
-				if( (searchState.romId.familyCode() == 0x28) | (searchState.romId.familyCode() == 0x10))
-				{
-					if (actNumberSensors<NUMBER_OF_TEMPSENSORS)
-					{
-						tempSensors[actNumberSensors] = new TempSensor(selector,true,temp_index);
-						temp_index++;
-						tempSensors[actNumberSensors]->setRomID(searchState.romId);
-						buffer_rom_id(romBuf,searchState.romId);
-						cnet.sendInfo(romBuf,BROADCAST);
-						actNumberSensors++;
-					}
-					else
-					{
-						cnet.sendWarning("Too much sensors",BROADCAST);
-					}
-				}
-				result = OWNext(owm, searchState);
-			}
-			while( (result == OneWireMaster::Success) && (last_dev==false) );
-		}
-		else
-		{
-			//cnet.print("OWFirst failed with error code: ");
-			//cnet.println(result, Serial::DEC);
-		}
-	}
-	else
-	{
-		cnet.println("No 1-wire devices");
-	}
-	sprintf(romBuf,"No. Sensoren:%d", actNumberSensors);
-	cnet.sendInfo(romBuf,BROADCAST);
-}
-
-//*********************************************************************
-void buffer_rom_id(char *buffer,OneWire::RomId & romId)
-{
-	char temp[3];
-	strcpy(buffer,"0x");
-	for(uint8_t idx = 0; idx < RomId::byteLen; idx++)
-	{
-		sprintf(temp,"%x",romId[idx]);
-		strcat(buffer,temp);
-	}
-}
-
 void readEEData()
 {
   u8F1Swell      = eeprom_read_byte(&ee_u8F1Swell);
@@ -371,11 +302,8 @@ void readEEData()
 
 void writeEEData()
 {
-  eeprom_update_byte(&ee_u8F1Swell,u8F1Swell);
-  eeprom_update_byte(&ee_u8F1Hysterese,u8F1Hysterese);
-  eeprom_update_byte(&ee_u8F2Swell,u8F2Swell);
-  eeprom_update_byte(&ee_u8F2Hysterese,u8F2Hysterese);
-  eeprom_update_byte(&ee_u8FanSetStatus,u8FanSetStatus);
+  LEDGRUEN_ON;
+	MyTimers[TIMER_SAVE_DELAY].state = TM_START; // Speicherverzögerung läuft los
 }
 
 
