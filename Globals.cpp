@@ -8,25 +8,12 @@
 
 #include "LuefterSteuerung.h"
 
-//using namespace OneWire;
-//using namespace RomCommands;
-
-
-#define CQ "CQ"
-#define C1 "C1"
-#define Bd "Bd"
 #define LB "LB"
-
-
-using namespace OneWire;
-using namespace RomCommands;
-
 
 const char *Node = NODE_STRING;
 char IDNumber[12] EEMEM = "1784324-01";
 char SerialNumber[12] EEMEM = "1958632254";
 char IndexNumber[2] EEMEM = "A";
-//TempSensor *activeSensor=NULL;
 
 const char *luefterStatusStrings[4]={"aus","Stufe 1","Stufe 2","Auto"};
 
@@ -55,10 +42,7 @@ int errno;      // Globale Fehlerbehandlung
 
 char SecurityLevel = 0;
 
-//DS2484 owm;
-//TempSensor *tempSensors[NUMBER_OF_TEMPSENSORS];
 uint8_t actNumberSensors = 0;
-/* Global variables for TWI */
 
 volatile bool nextSendReady=false;
 
@@ -71,10 +55,3 @@ TWI_MasterDriver_t twiE_Master;    /*!< TWI master module. */
 
 shtc3 humiSensor;
 
-DS2484 owm;
-
-SearchState searchState;
-MultidropRomIterator selector(owm);
-
-TempSensor *tempSensors[NUMBER_OF_TEMPSENSORS];
-SENSINFOS storedSensors[NUMBER_STORED_SENSORS] EEMEM;

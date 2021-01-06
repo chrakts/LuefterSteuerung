@@ -15,7 +15,6 @@
 #include <string.h>
 
 #include "myconstants.h"
-
 #include "Serial.h"
 #include "External.h"
 #include "timer.h"
@@ -25,17 +24,11 @@
 #include "Communication.h"
 #include "xmegaClocks.h"
 
-#include "Masters/Masters.h"
-#include "Slaves/Slaves.h"
-#include "RomId/RomCommands.h"
-#include "RomId/RomId.h"
-#include "Masters/DS248x/DS2484/DS2484.h"
 #include "twi_master_driver.h"
 #include "max7328.h"
 #include "LuefterHardware.h"
 #include "shtc3.h"
-
-using namespace OneWire;
+#include "ledHardware.h"
 
 uint8_t doLastSensor();
 uint8_t doClima();

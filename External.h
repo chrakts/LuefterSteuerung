@@ -23,20 +23,9 @@
 #include "timer.h"
 #include "CRC_Calc.h"
 #include "Communication.h"
-#include "Masters/Masters.h"
-#include "Slaves/Slaves.h"
-#include "RomId/RomCommands.h"
-#include "RomId/RomId.h"
-#include "Masters/DS248x/DS2484/DS2484.h"
 #include "twi_master_driver.h"
 #include "shtc3.h"
-#include "TempSensor.h"
-
 #include "myTimers.h"
-
-using namespace OneWire;
-using namespace RomCommands;
-
 
 extern volatile uint8_t UART0_ring_received;
 extern volatile  char UART0_ring_buffer[UART0_RING_BUFFER_SIZE];
@@ -91,13 +80,5 @@ extern TWI_MasterDriver_t twiC_Master;    /*!< TWI master module. */
 extern TWI_MasterDriver_t twiE_Master;    /*!< TWI master module. */
 
 extern shtc3 humiSensor;
-
-extern DS2484 owm;
-extern SearchState searchState;
-extern MultidropRomIterator selector;
-
-extern TempSensor *tempSensors[NUMBER_OF_TEMPSENSORS];
-extern SENSINFOS storedSensors[NUMBER_STORED_SENSORS] EEMEM;
-
 
 #endif /* EXTERNAL_H_ */
