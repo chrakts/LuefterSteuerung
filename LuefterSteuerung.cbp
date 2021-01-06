@@ -20,7 +20,7 @@
 					<Add option="-DF_CPU=32000000UL" />
 					<Add option="-DSYSCLK=CLK32M" />
 					<Add option="-DPLL=0" />
-					<Add option="-DCLOCK_CALIBRATION=0x83" />
+					<Add option="-DCLOCK_CALIBRATION=0x73" />
 					<Add option="-DNODE_STRING=LB" />
 					<Add directory="./" />
 				</Compiler>
@@ -29,13 +29,13 @@
 				</Linker>
 			</Target>
 			<Environment>
-				<Variable name="MCU" value="atxmega128a4u" />
+				<Variable name="MCU" value="atxmega32a4u" />
 			</Environment>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-std=c++14" />
-			<Add option="-mmcu=atxmega128a4u" />
+			<Add option="-mmcu=atxmega32a4u" />
 			<Add option="-c -fpermissive" />
 			<Add option="-Wno-enum-compare" />
 			<Add option="-MD -MP -MF" />
@@ -58,7 +58,7 @@
 			<Add directory="/home/chrak/Daten/Software/repositories/timer" />
 		</Compiler>
 		<Linker>
-			<Add option="-mmcu=atxmega128a4u" />
+			<Add option="-mmcu=atxmega32a4u" />
 			<Add option="-Wl,-Map=$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).map,--cref" />
 			<Add option="-Wl,-u,vfprintf" />
 			<Add option="-Wl,--gc-sections" />
@@ -89,38 +89,6 @@
 		<Unit filename="../communication/UART.h" />
 		<Unit filename="../max7328/max7328.cpp" />
 		<Unit filename="../max7328/max7328.h" />
-		<Unit filename="../maxim1W/Masters/DS248x/DS2484/DS2484.cpp" />
-		<Unit filename="../maxim1W/Masters/DS248x/DS2484/DS2484.h" />
-		<Unit filename="../maxim1W/Masters/DS248x/DS248x.cpp" />
-		<Unit filename="../maxim1W/Masters/DS248x/DS248x.h" />
-		<Unit filename="../maxim1W/Masters/Masters.h" />
-		<Unit filename="../maxim1W/Masters/OneWireMaster.cpp" />
-		<Unit filename="../maxim1W/Masters/OneWireMaster.h" />
-		<Unit filename="../maxim1W/RomId/RomCommands.cpp" />
-		<Unit filename="../maxim1W/RomId/RomCommands.h" />
-		<Unit filename="../maxim1W/RomId/RomId.h" />
-		<Unit filename="../maxim1W/RomId/RomIterator.cpp" />
-		<Unit filename="../maxim1W/RomId/RomIterator.h" />
-		<Unit filename="../maxim1W/Slaves/Authenticators/Authenticators.h" />
-		<Unit filename="../maxim1W/Slaves/Bridges/Bridges.h" />
-		<Unit filename="../maxim1W/Slaves/Bridges/DS28E17/DS28E17.cpp" />
-		<Unit filename="../maxim1W/Slaves/Bridges/DS28E17/DS28E17.h" />
-		<Unit filename="../maxim1W/Slaves/Memory/DS2431/DS2431.cpp" />
-		<Unit filename="../maxim1W/Slaves/Memory/DS2431/DS2431.h" />
-		<Unit filename="../maxim1W/Slaves/Memory/Memory.h" />
-		<Unit filename="../maxim1W/Slaves/OneWireSlave.h" />
-		<Unit filename="../maxim1W/Slaves/Sensors/DS18B20/DS18B20.cpp" />
-		<Unit filename="../maxim1W/Slaves/Sensors/DS18B20/DS18B20.h" />
-		<Unit filename="../maxim1W/Slaves/Sensors/DS1920/DS1920.cpp" />
-		<Unit filename="../maxim1W/Slaves/Sensors/DS1920/DS1920.h" />
-		<Unit filename="../maxim1W/Slaves/Sensors/Sensors.h" />
-		<Unit filename="../maxim1W/Slaves/Slaves.h" />
-		<Unit filename="../maxim1W/Slaves/Switches/DS2413/DS2413.cpp" />
-		<Unit filename="../maxim1W/Slaves/Switches/DS2413/DS2413.h" />
-		<Unit filename="../maxim1W/Slaves/Switches/Switches.h" />
-		<Unit filename="../maxim1W/Utilities/array.h" />
-		<Unit filename="../maxim1W/Utilities/crc.cpp" />
-		<Unit filename="../maxim1W/Utilities/crc.h" />
 		<Unit filename="../sht2x/shtc3.cpp" />
 		<Unit filename="../sht2x/shtc3.h" />
 		<Unit filename="../timer/timer.cpp" />
@@ -137,8 +105,6 @@
 		<Unit filename="LuefterSteuerung.cpp" />
 		<Unit filename="LuefterSteuerung.h" />
 		<Unit filename="OneWire.h" />
-		<Unit filename="TempSensor.cpp" />
-		<Unit filename="TempSensor.h" />
 		<Unit filename="Wire.cpp" />
 		<Unit filename="Wire.h" />
 		<Unit filename="ledHardware.h" />

@@ -27,6 +27,7 @@ void setup()
 
  // TWI_MasterInit(&twiC_Master, &TWIC, TWI_MASTER_INTLVL_LO_gc, TWI_BAUDSETTING);
   TWI_MasterInit(&twiE_Master, &TWIE, TWI_MASTER_INTLVL_LO_gc, TWI_BAUDSETTING);
+  TWI_MasterInit(&twiC_Master, &TWIC, TWI_MASTER_INTLVL_LO_gc, TWI_BAUDSETTING);
 
 	for(i=0;i<20;i++)
 	{
@@ -52,18 +53,15 @@ uint8_t reportStarted = false;
   readEEData();
 
 	init_mytimer();
-// 	setup_twi();
 
 	uint8_t sensorReady=SENSOR_READY;
 	MAX7328 maxTest(&twiE_Master,I2C_EXTENDER_ADDRESS);
   maxTest.newValue(0xff);
   while(!TWI_MasterReady(&twiE_Master))
     ;
-
-  humiSensor.begin(&twiE_Master);
+  humiSensor.begin(&twiC_Master);
   humiSensor.setMode(SHTC3_NORMAL_T_FIRST);
-  _delay_ms(10);
-  cnet.broadcastUInt16(humiSensor.getID(),'a','b','c');
+  cnet.broadcastUInt16(humiSensor.getID(),'S','I','D');
 
 	while (1)
 	{
