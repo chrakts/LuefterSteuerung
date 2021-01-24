@@ -59,10 +59,10 @@ void nextTemperatureStatus(uint8_t test)
 
 void nowSaveEEProm(uint8_t test)
 {
-  eeprom_update_byte(&ee_u8F1Swell,u8F1Swell);
-  eeprom_update_byte(&ee_u8F1Hysterese,u8F1Hysterese);
-  eeprom_update_byte(&ee_u8F2Swell,u8F2Swell);
-  eeprom_update_byte(&ee_u8F2Hysterese,u8F2Hysterese);
+  eeprom_update_float(&ee_fF1Swell,fF1Swell);
+  eeprom_update_float(&ee_fF1Hysterese,fF1Hysterese);
+  eeprom_update_float(&ee_fF2Swell,fF2Swell);
+  eeprom_update_float(&ee_fF2Hysterese,fF2Hysterese);
   eeprom_update_byte(&ee_u8FanSetStatus,u8FanSetStatus);
   LEDGRUEN_OFF;
 }

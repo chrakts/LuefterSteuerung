@@ -22,13 +22,14 @@ uint16_t actReportBetweenSensors = REPORT_BETWEEN_SENSORS;
 uint16_t actWaitAfterLastSensor  = WAIT_AFTER_LAST_SENSOR;
 
 
-volatile double fTemperatur=-999,fHumidity=-999,fDewPoint=-999,fAbsHumitdity=-999;
-volatile uint8_t u8F1Swell=25,u8F1Hysterese=1,u8F2Swell=35,u8F2Hysterese=2;
+volatile double  fTemperatur=-999,fHumidity=-999,fDewPoint=-999,fAbsHumitdity=-999;
+volatile double  fF1Swell=25,fF1Hysterese=1,fF2Swell=35,fF2Hysterese=2;
 volatile uint8_t u8FanSetStatus=FAN_STATUS_AUTO,u8FanActualStatus=FAN_STATUS_2,u8FanActualStatusOld=FAN_STATUS_UNVALID;
 
-volatile uint8_t u8oldF1Swell,u8oldF1Hysterese,u8oldF2Swell,u8oldF2Hysterese,u8oldFanSetStatus;
+volatile double  foldF1Swell,foldF1Hysterese,foldF2Swell,foldF2Hysterese;
+volatile uint8_t u8oldFanSetStatus;
 
-uint8_t EEMEM ee_u8F1Swell=75,ee_u8F1Hysterese=5,ee_u8F2Swell=85,ee_u8F2Hysterese=5;
+float  EEMEM ee_fF1Swell=75,ee_fF1Hysterese=5,ee_fF2Swell=85,ee_fF2Hysterese=5;
 uint8_t EEMEM ee_u8FanSetStatus=FAN_STATUS_AUTO;
 
 

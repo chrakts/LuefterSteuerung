@@ -43,12 +43,13 @@ extern uint16_t actReportBetweenBlocks;
 extern uint16_t actReportBetweenSensors;
 extern uint16_t actWaitAfterLastSensor;
 
-volatile extern double fTemperatur,fHumidity,fDewPoint,fAbsHumitdity;
-volatile extern uint8_t u8F1Swell,u8F1Hysterese,u8F2Swell,u8F2Hysterese;
+volatile extern double  fTemperatur,fHumidity,fDewPoint,fAbsHumitdity;
+volatile extern double  fF1Swell,fF1Hysterese,fF2Swell,fF2Hysterese;
 volatile extern uint8_t u8FanSetStatus,u8FanActualStatus,u8FanActualStatusOld;
-volatile extern uint8_t u8oldF1Swell,u8oldF1Hysterese,u8oldF2Swell,u8oldF2Hysterese,u8oldFanSetStatus;
+volatile extern double  foldF1Swell,foldF1Hysterese,foldF2Swell,foldF2Hysterese;
+volatile extern uint8_t u8oldFanSetStatus;
 
-extern uint8_t EEMEM ee_u8F1Swell,ee_u8F1Hysterese,ee_u8F2Swell,ee_u8F2Hysterese;
+extern float EEMEM ee_fF1Swell,ee_fF1Hysterese,ee_fF2Swell,ee_fF2Hysterese;
 extern uint8_t EEMEM ee_u8FanSetStatus;
 
 extern const char *fehler_text[];

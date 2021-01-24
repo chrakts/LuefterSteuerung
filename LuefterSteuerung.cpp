@@ -57,8 +57,11 @@ uint8_t reportStarted = false;
 	uint8_t sensorReady=SENSOR_READY;
 	MAX7328 maxTest(&twiE_Master,I2C_EXTENDER_ADDRESS);
   maxTest.newValue(0xff);
+  _delay_ms(100);
+  /*
   while(!TWI_MasterReady(&twiE_Master))
     ;
+  */
   humiSensor.begin(&twiC_Master);
   humiSensor.setMode(SHTC3_NORMAL_T_FIRST);
   cnet.broadcastUInt16(humiSensor.getID(),'S','I','D');
@@ -72,21 +75,21 @@ uint8_t reportStarted = false;
       u8FanActualStatus = u8FanSetStatus;
     else // FAN = Auto
     {
-      uint8_t u8Humi = (uint8_t)fHumidity;
+      double fHumi = fHumidity;
       switch(u8FanActualStatus)
       {
         case FAN_STATUS_OFF:
-          if( u8Humi > u8F1Swell)
+          if( fHumi > fF1Swell)
             u8FanActualStatus = FAN_STATUS_1;
         break;
         case FAN_STATUS_1:
-          if( u8Humi < u8F1Swell-u8F1Hysterese)
+          if( fHumi < fF1Swell-fF1Hysterese)
             u8FanActualStatus = FAN_STATUS_OFF;
-          else if( u8Humi > u8F2Swell )
+          else if( fHumi > fF2Swell )
             u8FanActualStatus = FAN_STATUS_2;
         break;
         case FAN_STATUS_2:
-          if( u8Humi < u8F2Swell-u8F2Hysterese)
+          if( fHumi < fF2Swell-fF2Hysterese)
             u8FanActualStatus = FAN_STATUS_1;
         break;
       }
@@ -163,20 +166,24 @@ uint8_t reportStarted = false;
                 cnet.sendStandard(buffer,BROADCAST,'C','1','d','F');
             break;
             case L1SWELLREPORT:
-                sprintf(buffer,"%u",(uint8_t)u8F1Swell);
-                cnet.sendStandard(buffer,BROADCAST,'L','1','L','F');
+                cnet.broadcastDouble(fF1Swell,'L','1','L');
+                //sprintf(buffer,"%u",(uint8_t)u8F1Swell);
+                //cnet.sendStandard(buffer,BROADCAST,'L','1','L','F');
             break;
             case L2SWELLREPORT:
-                sprintf(buffer,"%u",(uint8_t)u8F2Swell);
-                cnet.sendStandard(buffer,BROADCAST,'L','1','G','F');
+                cnet.broadcastDouble(fF2Swell,'L','1','G');
+                //sprintf(buffer,"%u",(uint8_t)u8F2Swell);
+                //cnet.sendStandard(buffer,BROADCAST,'L','1','G','F');
             break;
             case L1HYSTREPORT:
-                sprintf(buffer,"%u",(uint8_t)u8F1Hysterese);
-                cnet.sendStandard(buffer,BROADCAST,'L','1','H','F');
+                cnet.broadcastDouble(fF1Hysterese,'L','1','H');
+                //sprintf(buffer,"%u",(uint8_t)u8F1Hysterese);
+                //cnet.sendStandard(buffer,BROADCAST,'L','1','H','F');
             break;
             case L2HYSTREPORT:
-                sprintf(buffer,"%u",(uint8_t)u8F2Hysterese);
-                cnet.sendStandard(buffer,BROADCAST,'L','1','I','F');
+                cnet.broadcastDouble(fF2Hysterese,'L','1','I');
+                //sprintf(buffer,"%u",(uint8_t)u8F2Hysterese);
+                //cnet.sendStandard(buffer,BROADCAST,'L','1','I','F');
             break;
             case FANACTUALSTATUSREPORT:
                 reportFanActualStatus(&cnet);
@@ -193,18 +200,18 @@ uint8_t reportStarted = false;
         }
     }
 
-    if( (u8oldF1Swell      != u8F1Swell     ) |
-        (u8oldF1Hysterese  != u8F1Hysterese ) |
-        (u8oldF2Swell      != u8F2Swell     ) |
-        (u8oldF2Hysterese  != u8F2Hysterese ) |
+    if( (foldF1Swell      != fF1Swell     ) |
+        (foldF1Hysterese  != fF1Hysterese ) |
+        (foldF2Swell      != fF2Swell     ) |
+        (foldF2Hysterese  != fF2Hysterese ) |
         (u8oldFanSetStatus != u8FanSetStatus)
       )
     {
       writeEEData();
-      u8oldF1Swell      = u8F1Swell     ;
-      u8oldF1Hysterese  = u8F1Hysterese ;
-      u8oldF2Swell      = u8F2Swell     ;
-      u8oldF2Hysterese  = u8F2Hysterese ;
+      foldF1Swell      = fF1Swell     ;
+      foldF1Hysterese  = fF1Hysterese ;
+      foldF2Swell      = fF2Swell     ;
+      foldF2Hysterese  = fF2Hysterese ;
       u8oldFanSetStatus = u8FanSetStatus;
     }
 	}
@@ -286,15 +293,15 @@ bool noError;
 
 void readEEData()
 {
-  u8F1Swell      = eeprom_read_byte(&ee_u8F1Swell);
-  u8F1Hysterese  = eeprom_read_byte(&ee_u8F1Hysterese);
-  u8F2Swell      = eeprom_read_byte(&ee_u8F2Swell);
-  u8F2Hysterese  = eeprom_read_byte(&ee_u8F2Hysterese);
+  fF1Swell      = eeprom_read_float(&ee_fF1Swell);
+  fF1Hysterese  = eeprom_read_float(&ee_fF1Hysterese);
+  fF2Swell      = eeprom_read_float(&ee_fF2Swell);
+  fF2Hysterese  = eeprom_read_float(&ee_fF2Hysterese);
   u8FanSetStatus = eeprom_read_byte(&ee_u8FanSetStatus);
-  u8oldF1Swell      = u8F1Swell     ;
-  u8oldF1Hysterese  = u8F1Hysterese ;
-  u8oldF2Swell      = u8F2Swell     ;
-  u8oldF2Hysterese  = u8F2Hysterese ;
+  foldF1Swell      = fF1Swell     ;
+  foldF1Hysterese  = fF1Hysterese ;
+  foldF2Swell      = fF2Swell     ;
+  foldF2Hysterese  = fF2Hysterese ;
   u8oldFanSetStatus = u8FanSetStatus;
 }
 

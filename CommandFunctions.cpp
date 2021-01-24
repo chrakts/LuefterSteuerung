@@ -25,10 +25,10 @@ COMMAND cnetCommands[NUM_COMMANDS] =
 		{'C','a',CUSTOMER,NOPARAMETER,0,jobGetCAbsHumiditySensor},
 		{'L','a',CUSTOMER,NOPARAMETER,0,jobGetLuefterActualStatus},
 		{'L','s',CUSTOMER,NOPARAMETER,0,jobGetLuefterSetStatus},
-		{'L','L',CUSTOMER,UINT_8,1,jobSetLuefter1OnValue},
-		{'L','G',CUSTOMER,UINT_8,1,jobSetLuefter2OnValue},
-		{'L','H',CUSTOMER,UINT_8,1,jobSetLuefter1HystValue},
-		{'L','I',CUSTOMER,UINT_8,1,jobSetLuefter2HystValue},
+		{'L','L',CUSTOMER,FLOAT,1,jobSetLuefter1OnValue},
+		{'L','G',CUSTOMER,FLOAT,1,jobSetLuefter2OnValue},
+		{'L','H',CUSTOMER,FLOAT,1,jobSetLuefter1HystValue},
+		{'L','I',CUSTOMER,FLOAT,1,jobSetLuefter2HystValue},
 		{'L','S',CUSTOMER,STRING,8,jobSetLuefterSetStatus},
 		{'L','l',CUSTOMER,NOPARAMETER,0,jobGetLuefter1OnValue},
 		{'L','g',CUSTOMER,NOPARAMETER,0,jobGetLuefter2OnValue},
@@ -43,22 +43,22 @@ COMMAND cnetCommands[NUM_COMMANDS] =
 
 void jobGetLuefter1OnValue(ComReceiver *comRec, char function,char address,char job, void * pMem)
 {
-	comRec->sendAnswerInt(function,address,job,u8F1Swell,true);
+	comRec->sendAnswerDouble(function,address,job,fF1Swell,true);
 }
 
 void jobGetLuefter2OnValue(ComReceiver *comRec, char function,char address,char job, void * pMem)
 {
-	comRec->sendAnswerInt(function,address,job,u8F2Swell,true);
+	comRec->sendAnswerDouble(function,address,job,fF2Swell,true);
 }
 
 void jobGetLuefter1HystValue(ComReceiver *comRec, char function,char address,char job, void * pMem)
 {
-	comRec->sendAnswerInt(function,address,job,u8F1Hysterese,true);
+	comRec->sendAnswerDouble(function,address,job,fF1Hysterese,true);
 }
 
 void jobGetLuefter2HystValue(ComReceiver *comRec, char function,char address,char job, void * pMem)
 {
-	comRec->sendAnswerInt(function,address,job,u8F2Hysterese,true);
+	comRec->sendAnswerDouble(function,address,job,fF2Hysterese,true);
 }
 
 void jobGetLuefterSetStatus(ComReceiver *comRec, char function,char address,char job, void * pMem)
@@ -73,30 +73,30 @@ void jobGetLuefterActualStatus(ComReceiver *comRec, char function,char address,c
 
 void jobSetLuefter1OnValue(ComReceiver *comRec, char function,char address,char job, void * pMem)
 {
-	u8F1Swell = ( (uint8_t*) pMem )[0];
+	fF1Swell = ( (double*) pMem )[0];
 	MyTimers[TIMER_SAVE_DELAY].state = TM_START;
-	comRec->Getoutput()->broadcastUInt8(u8F1Swell,function,address,job);
+	comRec->Getoutput()->broadcastDouble(fF1Swell,function,address,job);
 }
 
 void jobSetLuefter2OnValue(ComReceiver *comRec, char function,char address,char job, void * pMem)
 {
-	u8F2Swell = ( (uint8_t*) pMem )[0];
+	fF2Swell = ( (double*) pMem )[0];
 	MyTimers[TIMER_SAVE_DELAY].state = TM_START;
-	comRec->Getoutput()->broadcastUInt8(u8F2Swell,function,address,job);
+	comRec->Getoutput()->broadcastDouble(fF2Swell,function,address,job);
 }
 
 void jobSetLuefter1HystValue(ComReceiver *comRec, char function,char address,char job, void * pMem)
 {
-	u8F1Hysterese = ( (uint8_t*) pMem )[0];
+	fF1Hysterese = ( (double*) pMem )[0];
 	MyTimers[TIMER_SAVE_DELAY].state = TM_START;
-	comRec->Getoutput()->broadcastUInt8(u8F1Hysterese,function,address,job);
+	comRec->Getoutput()->broadcastDouble(fF1Hysterese,function,address,job);
 }
 
 void jobSetLuefter2HystValue(ComReceiver *comRec, char function,char address,char job, void * pMem)
 {
-	u8F2Hysterese = ( (uint8_t*) pMem )[0];
+	fF2Hysterese = ( (double*) pMem )[0];
 	MyTimers[TIMER_SAVE_DELAY].state = TM_START;
-	comRec->Getoutput()->broadcastUInt8(u8F2Hysterese,function,address,job);
+	comRec->Getoutput()->broadcastDouble(fF2Hysterese,function,address,job);
 }
 
 void jobSetLuefterSetStatus(ComReceiver *comRec, char function,char address,char job, void * pMem)
