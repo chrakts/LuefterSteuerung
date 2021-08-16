@@ -10,31 +10,34 @@
 void setup()
 {
   init_clock(SYSCLK,PLL,true,CLOCK_CALIBRATION);
-	PORTA_DIRSET = PIN2_bm | PIN3_bm | PIN4_bm;
-	PORTA_OUTSET = 0xff;
+  PORTA_DIRSET = PIN2_bm | PIN3_bm | PIN4_bm;
+  PORTA_OUTSET = 0xff;
 
-	PORTB_DIRSET = 0xff;
+  PORTB_DIRSET = 0xff;
 
-	PORTC_DIRSET = PIN1_bm;
+  PORTC_DIRSET = PIN1_bm;
 
-	PORTD_DIRSET = PIN0_bm | PIN4_bm | PIN5_bm | PIN7_bm;
-	PORTD_DIRCLR = PIN6_bm;
-	PORTD_OUTCLR = PIN4_bm | PIN5_bm;
+  PORTD_DIRSET = PIN0_bm | PIN4_bm | PIN5_bm | PIN7_bm;
+  PORTD_DIRCLR = PIN6_bm;
+  PORTD_OUTCLR = PIN4_bm | PIN5_bm;
 
-	PORTE_DIRSET = 0xff;
+  PORTE_DIRSET = 0xff;
 
-	uint8_t i;
-
- // TWI_MasterInit(&twiC_Master, &TWIC, TWI_MASTER_INTLVL_LO_gc, TWI_BAUDSETTING);
-  TWI_MasterInit(&twiE_Master, &TWIE, TWI_MASTER_INTLVL_LO_gc, TWI_BAUDSETTING);
+  #if AtxMegaSteckdosen_v02
+    TWI_MasterInit(&twiE_Master, &TWIE, TWI_MASTER_INTLVL_LO_gc, TWI_BAUDSETTING);
+  #endif // BOARD
   TWI_MasterInit(&twiC_Master, &TWIC, TWI_MASTER_INTLVL_LO_gc, TWI_BAUDSETTING);
 
-	for(i=0;i<20;i++)
+
+	for(uint8_t i=0;i<20;i++)
 	{
 		LEDGRUEN_TOGGLE;
 		_delay_ms(50);
 	}
+
   LEDGRUEN_OFF;
+  LEDROT_OFF;
+  LEDBLAU_OFF;
 
 	PMIC_CTRL = PMIC_LOLVLEX_bm | PMIC_HILVLEN_bm | PMIC_MEDLVLEN_bm;
 	sei();
@@ -45,29 +48,30 @@ void setup()
 int main(void)
 {
 uint8_t reportStarted = false;
-
-	setup();
-
+  WDT_Disable();
+  setup();
 	cnet.broadcastUInt8((uint8_t) RST.STATUS,'S','0','R');
-
   readEEData();
-
 	init_mytimer();
+	WDT_EnableAndSetTimeout(WDT_PER_8KCLK_gc);
+	WDT_Reset();
 
 	uint8_t sensorReady=SENSOR_READY;
-	MAX7328 maxTest(&twiE_Master,I2C_EXTENDER_ADDRESS);
-  maxTest.newValue(0xff);
-  _delay_ms(100);
-  /*
-  while(!TWI_MasterReady(&twiE_Master))
-    ;
-  */
+  #ifdef AtxMegaSteckdosen_v02
+    MAX7328 maxTest(&twiE_Master,I2C_EXTENDER_ADDRESS);
+    maxTest.newValue(0xff);
+    _delay_ms(100);
+  #endif // BOARD
+
   humiSensor.begin(&twiC_Master);
   humiSensor.setMode(SHTC3_NORMAL_T_FIRST);
   cnet.broadcastUInt16(humiSensor.getID(),'S','I','D');
+	WDT_Reset();
+	WDT_EnableAndSetTimeout(WDT_PER_1KCLK_gc);
 
 	while (1)
 	{
+    WDT_Reset();
 		cnetRec.comStateMachine();
 		cnetRec.doJob();
 		// Ermittlung des neuen Lüfterstatus
@@ -96,19 +100,44 @@ uint8_t reportStarted = false;
     }
     // Setzen der Relais und der LEDs entsprechend des Lüfterstatus
     uint8_t outputs = 0xff;
-    switch(u8FanActualStatus)
-    {
-      case FAN_STATUS_OFF:
-        outputs ^= LED_RGB_RED;
-      break;
-      case FAN_STATUS_1:
-        outputs ^= LED_RGB_GREEN | POWER_2;
-      break;
-      case FAN_STATUS_2:
-        outputs ^= LED_RGB_BLUE| POWER_3;
-      break;
-    }
-    maxTest.updateValue(outputs);
+    #ifdef AtxMegaSteckdosen_v02
+      switch(u8FanActualStatus)
+      {
+        case FAN_STATUS_OFF:
+          outputs ^= LED_RGB_RED;
+        break;
+        case FAN_STATUS_1:
+          outputs ^= LED_RGB_GREEN | POWER_2;
+        break;
+        case FAN_STATUS_2:
+          outputs ^= LED_RGB_BLUE| POWER_3;
+        break;
+      }
+      maxTest.updateValue(outputs);
+    #elif BasisAtxMega32_v02
+      switch(u8FanActualStatus)
+      {
+        case FAN_STATUS_OFF:
+          RELAIS2_OFF;
+          RELAIS3_OFF;
+          RGBLED_GRUEN_OFF;
+          RGBLED_BLAU_OFF;
+        break;
+        case FAN_STATUS_1:
+          RELAIS2_ON;
+          RELAIS3_OFF;
+          RGBLED_GRUEN_ON;
+          RGBLED_BLAU_OFF;
+        break;
+        case FAN_STATUS_2:
+          RELAIS2_OFF;
+          RELAIS3_ON;
+          RGBLED_GRUEN_OFF;
+          RGBLED_BLAU_ON;
+        break;
+      }
+    #else
+    #endif // BOARD
 
     // Falls sich der Lüfterstatus geändert, wird dieser gesendet
     if( u8FanActualStatusOld != u8FanActualStatus)
@@ -307,7 +336,7 @@ void readEEData()
 
 void writeEEData()
 {
-  LEDGRUEN_ON;
+  //LEDGRUEN_ON;
 	MyTimers[TIMER_SAVE_DELAY].state = TM_START; // Speicherverzögerung läuft los
 }
 

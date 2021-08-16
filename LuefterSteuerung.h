@@ -29,6 +29,7 @@
 #include "LuefterHardware.h"
 #include "shtc3.h"
 #include "ledHardware.h"
+#include "watchdog.h"
 
 uint8_t doLastSensor();
 uint8_t doClima();

@@ -15,12 +15,22 @@
 #define  USE_RS485_FEEDBACK_0
 #define  USE_BUSY_0 true
 
+#ifdef AtxMegaSteckdosen_v02
 #define UART_PORT_0 D
 #define UART_NUM_0  0
 #define TE_PIN_0    0
 #define RE_PIN_0    1
 #define TX_PIN_0    3
 #define RX_PIN_0    2
+#elif BasisAtxMega32_v02
+#define UART_PORT_0 E
+#define UART_NUM_0  0
+#define TE_PIN_0    0
+#define RE_PIN_0    1
+#define TX_PIN_0    3
+#define RX_PIN_0    2
+#endif // AtxMegaSteckdosen_v02
+
 #define USART_RXCINTLVL_0 USART_RXCINTLVL_LO_gc
 #define USART_TXCINTLVL_0 USART_TXCINTLVL_LO_gc
 /* ###################### ########### ############################ */
@@ -30,19 +40,29 @@
 #undef  USE_RS485_FEEDBACK_1
 #define USE_BUSY_1 false
 
+#ifdef AtxMegaSteckdosen_v02
 #define UART_PORT_1 E
 #define UART_NUM_1  0
 #define TE_PIN_1    4
 #define RE_PIN_1    5
 #define TX_PIN_1    7
 #define RX_PIN_1    6
+#elif BasisAtxMega32_v02
+#define UART_PORT_1 D
+#define UART_NUM_1  0
+#define TE_PIN_1    4
+#define RE_PIN_1    5
+#define TX_PIN_1    7
+#define RX_PIN_1    6
+#endif // AtxMegaSteckdosen_v02
+
 #define USART_RXCINTLVL_1 USART_RXCINTLVL_LO_gc
 #define USART_TXCINTLVL_1 USART_TXCINTLVL_LO_gc
 /* ###################### ########### ############################ */
 
 /* ###################### Busy-Timer  ############################ */
 // Dieser Timer wird dann für beide Ports verwendet (Timer2 L/H -> belegt damit auch Timer 1!)
-#define BUSY_TIMER_PORT C
+#define BUSY_TIMER_PORT D
 /* ###################### ########### ############################ */
 
 
